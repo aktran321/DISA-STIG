@@ -36,3 +36,8 @@ or run this PowerShell command in an elevated terminal
 ```
 auditpol /set /subcategory:"Process Creation" /success:enable
 ```
+![command](/disa-stig/run-ps-command.png)
+
+After running this command, I re-launch the advanced scan for Windows 11 STIG v2rf compliance. STIG WN11-AU-000050 is now satisfied.
+
+![stig](/disa-stig/scan-success.png)
