@@ -24,3 +24,15 @@ This repository is for practice in implementing DISA STIG guidelines. Security T
 ![plugin checks](/disa-stig/audit-fails.png)
 
 At this point, we can look through the flags and begin remediating the VM first manually, and then programmatically with PowerShell.
+
+## WN11-AU-000050
+The WN11-AU-000050 STIG requires Windows 11 to be set to log successful process creation events. If an attacker runs something they shouldn't, process creation auditing helps you identify when and where the program was executed, providing the defender a forensic trail.
+
+### Remediation
+In Group Policy (or Local Security Policy):
+Computer Configuration → Windows Settings → Security Settings → Advanced Audit Policy Configuration → System Audit Policies → Detailed Tracking → Audit Process Creation → check Success.
+
+or run this PowerShell command in an elevated terminal
+```
+auditpol /set /subcategory:"Process Creation" /success:enable
+```
