@@ -23,6 +23,8 @@
     Put any usage instructions here.
     Example syntax:
     PS C:\> .\WN11-CC-000090.ps1
+
+    If the script returns a 1, you are compliant.
 #>
 
 
