@@ -24,7 +24,6 @@
     Example syntax:
     PS C:\> .\WN11-CC-000315.ps1
 #>
-New-ItemProperty -Path $uPath -Name $name -PropertyType DWord -Value 0 -Force | Out-Null
 $path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer"
 $name = "AlwaysInstallElevated"
 $desired = 0  # Disabled
