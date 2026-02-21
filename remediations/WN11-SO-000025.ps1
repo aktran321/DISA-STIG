@@ -24,23 +24,25 @@
     Example syntax:
     PS C:\> .\WN11-SO-000025.ps1
 #>
-# Rename the built-in Guest (SID ...-501) AND set Local Security Policy NewGuestName
+# WN11-SO-000025 - Rename built-in Guest account (SID ...-501)
+# Works without Get-LocalUser
 
-$NewGuestName = "svc_guest_disabled"  # <-- change this
+$NewGuestName = "svc_guest_disabled"   # <-- change to your desired non-obvious name
 
-# --- 1) Rename the actual local account (SID ends with -501) ---
-$guest = Get-LocalUser | Where-Object { $_.SID.Value -match '-501$' }
-if (-not $guest) { throw "Built-in Guest account (SID -501) not found." }
+# Find built-in Guest by SID ending in -501
+$acct = Get-CimInstance Win32_UserAccount -Filter "LocalAccount=True" |
+        Where-Object { $_.SID -match '-501$' } |
+        Select-Object -First 1
 
-if ($guest.Name -ne $NewGuestName) {
-    # Ensure target name not already taken
-    if (Get-LocalUser -Name $NewGuestName -ErrorAction SilentlyContinue) {
-        throw "Target name '$NewGuestName' already exists."
-    }
-    Rename-LocalUser -Name $guest.Name -NewName $NewGuestName
-}
+if (-not $acct) { throw "Built-in Guest account (SID -501) not found." }
 
-# --- 2) Set the Local Security Policy so Tenable/GP UI reflects the rename ---
+$oldName = $acct.Name
+Write-Host "Found Guest account: $oldName (SID $($acct.SID))"
+
+# Rename the account (NET works even when LocalAccounts module is missing)
+cmd.exe /c "net user `"$oldName`" `"$NewGuestName`""
+
+# Update Local Security Policy label so 'Accounts: Rename guest account' matches
 $inf = @"
 [Unicode]
 Unicode=yes
@@ -54,8 +56,8 @@ NewGuestName=$NewGuestName
 $cfg = Join-Path $env:TEMP "WN11-SO-000025.inf"
 $db  = Join-Path $env:TEMP "secedit.sdb"
 $inf | Set-Content -Path $cfg -Encoding Unicode
-
 secedit /configure /db $db /cfg $cfg /areas SECURITYPOLICY | Out-Null
 
-# Verify: show the -501 account name now
-(Get-LocalUser | Where-Object { $_.SID.Value -match '-501$' }).Name
+# Verify
+$new = (Get-CimInstance Win32_UserAccount -Filter "LocalAccount=True" | Where-Object { $_.SID -match '-501$' }).Name
+Write-Host "Now Guest (-501) is named: $new"
