@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    This PowerShell script ensures STIG WN11-CC-000391 is satisfied. “Always install with elevated privileges” must be Disabled
+    This PowerShell script ensures STIG WN11-CC-000391 is satisfied. Internet Explorer must be disabled for Windows 11.
 
 .NOTES
     Author          : Khang Tran
