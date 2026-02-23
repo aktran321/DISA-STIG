@@ -1,6 +1,12 @@
-Some debugging tips in case Tenable scans stop working with your Azure VM.
+## Debugging tricks in case Tenable scans stop working with your Azure VM.
 
-Step 1: Making the VM "Visible" (OS Connectivity)
+After disabling the windows Firewall and before running the scan, you may have to run the below PowerShell command AS AN ADMIN on your VM in order to enable remote administrative access by modifying the LocalAccountTokenFilterPolicy registry key. This command sets a registry key that allows local accounts (for example, labuser) to connect remotely with full administrative privileges without requiring elevation:
+```
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "LocalAccountTokenFilterPolicy" -Value 1 -Type DWord -Force
+```
+
+
+Making the VM "Visible" (OS Connectivity)
 Windows Enterprise blocks pings and remote management by default. Run these in PowerShell (Admin) on the target VM:
 PowerShell
 # 1. Enable Ping (ICMP) - Crucial for Tenable to see the host is alive
